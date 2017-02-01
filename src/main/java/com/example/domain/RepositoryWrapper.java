@@ -14,4 +14,22 @@ import java.util.List;
 public class RepositoryWrapper {
     private List<Repository> repositories;
     private List<Link> links;
+
+    public boolean hasNextPageLink() {
+        for (Link link: links) {
+            if (link.getRel() == "next") {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getNextPageLinkUrl() {
+        for (Link link: links) {
+            if (link.getRel() == "next") {
+                return link.getUrl();
+            }
+        }
+        return null;
+    }
 }

@@ -27,7 +27,7 @@ public class GitHubAPIApplicationTests {
 	}
 
 	@Test
-	public void checkRepositoryDomainJSONMapping() {
+	public void checkRepositoryDomainMapping() {
         RepositoryWrapper repositoryWrapper = gitHubAPIRepository.getRepositories();
         System.out.println(repositoryWrapper.getRepositories());
 	}

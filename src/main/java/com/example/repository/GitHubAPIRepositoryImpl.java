@@ -56,8 +56,8 @@ public class GitHubAPIRepositoryImpl implements GitHubAPIRepository {
                 int relEnd = linkHeader.substring(relStart).indexOf("\"");
                 String rel = linkHeader.substring(relStart, relStart+relEnd);
 
-                String href = linkHeader.substring(linkHeader.indexOf("<") + 1, linkHeader.indexOf(">"));
-                links.add(new Link(rel, href));
+                String url = linkHeader.substring(linkHeader.indexOf("<") + 1, linkHeader.indexOf(">"));
+                links.add(new Link(rel, url));
             }
         }
         return links;
