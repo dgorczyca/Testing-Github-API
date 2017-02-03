@@ -12,8 +12,7 @@ JUnit to test Jackson's object mapping<br />
 Web frameworks:
 <ul>
 Spring Boot for backend (Spring web)<br />
-HTML.... I am planning to use https://mdbootstrap.com/javascript/charts/ for pie charts for the repositories<br />
-Stuck at the moment with thymelife templating engine
+For HTML I am planning to use https://mdbootstrap.com/javascript/charts/ for pie charts for the repositories<br />
 </ul>
 
 So far I have prepared a mini library for handling GitHub API. <br />
