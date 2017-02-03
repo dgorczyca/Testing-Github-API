@@ -31,7 +31,4 @@ public class GitHubAPIApplicationTests {
         RepositoryWrapper repositoryWrapper = gitHubAPIRepository.getRepositories();
         System.out.println(repositoryWrapper.getRepositories());
 	}
-
-
-
 }

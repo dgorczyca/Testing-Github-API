@@ -4,11 +4,13 @@ import com.example.domain.Language;
 import com.example.domain.Link;
 import com.example.domain.Repository;
 import com.example.domain.RepositoryWrapper;
+import com.example.utility.GitHubAPIUtility;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -51,13 +53,8 @@ public class GitHubAPIRepositoryImpl implements GitHubAPIRepository {
         List<Link> links = new ArrayList<>();
         for (String linksHeader: header) {
             List<String> linksSplit = Arrays.asList(linksHeader.split(","));
-            for (String linkHeader: linksSplit) {
-                int relStart = linkHeader.indexOf("rel=")+5;
-                int relEnd = linkHeader.substring(relStart).indexOf("\"");
-                String rel = linkHeader.substring(relStart, relStart+relEnd);
-
-                String url = linkHeader.substring(linkHeader.indexOf("<") + 1, linkHeader.indexOf(">"));
-                links.add(new Link(rel, url));
+            for (String link : linksSplit) {
+                links.add(GitHubAPIUtility.parseLink(link));
             }
         }
         return links;
@@ -66,15 +63,27 @@ public class GitHubAPIRepositoryImpl implements GitHubAPIRepository {
     public RepositoryWrapper getRepositories() {
         ResponseEntity<Repository[]> responseEntity = restTemplate.getForEntity(GIT_HUB_API_USER_REPOSITORIES_URL, Repository[].class, repoOfInterest);
         List<Link> links = findLinks(getRemainingRepositoryLinks(responseEntity));
+        List<Repository> repositories = new ArrayList<>(Arrays.asList(responseEntity.getBody()));
+        setReposLanguages(repositories);
 
-        return new RepositoryWrapper(Arrays.asList(responseEntity.getBody()), null);
+        return new RepositoryWrapper(repositories, links);
     }
 
     public RepositoryWrapper getNextPage(String nextPageLink) {
         ResponseEntity<Repository[]> responseEntity = restTemplate.getForEntity(nextPageLink, Repository[].class);
         List<Link> links = findLinks(getRemainingRepositoryLinks(responseEntity));
+        List<Repository> repositories = new ArrayList<>(Arrays.asList(responseEntity.getBody()));
 
-        return new RepositoryWrapper(Arrays.asList(responseEntity.getBody()), null);
+        setReposLanguages(repositories);
+
+        return new RepositoryWrapper(repositories, links);
+    }
+
+    private void setReposLanguages(List<Repository> repositories) {
+        Assert.notNull(repositories);
+        for (Repository repository : repositories) {
+            repository.setLanguageList(getRepoLanguages(repository.getName()));
+        }
     }
 
     public List<Language> getRepoLanguages(String repoName) {

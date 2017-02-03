@@ -2,6 +2,7 @@ package com.example.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.util.Assert;
 
 import java.util.List;
 
@@ -16,8 +17,9 @@ public class RepositoryWrapper {
     private List<Link> links;
 
     public boolean hasNextPageLink() {
-        for (Link link: links) {
-            if (link.getRel() == "next") {
+        Assert.notNull(links);
+        for (Link link : links) {
+            if (link.getRel().equals("next")) {
                 return true;
             }
         }
@@ -25,11 +27,14 @@ public class RepositoryWrapper {
     }
 
     public String getNextPageLinkUrl() {
-        for (Link link: links) {
-            if (link.getRel() == "next") {
+        Assert.notNull(links);
+        for (Link link : links) {
+            if (link.getRel().equals("next")) {
                 return link.getUrl();
             }
         }
+        
         return null;
+
     }
 }
