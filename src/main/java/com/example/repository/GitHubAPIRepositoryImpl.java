@@ -5,6 +5,8 @@ import com.example.domain.Link;
 import com.example.domain.Repository;
 import com.example.domain.RepositoryWrapper;
 import com.example.utility.GitHubAPIUtility;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,20 +28,36 @@ import java.util.regex.Pattern;
  */
 @Component
 public class GitHubAPIRepositoryImpl implements GitHubAPIRepository {
+
     private final String repoOfInterest = "nasa";
+
+    @Value("${github.basicauth.username}")
+    private String gitHubUserName;
+
+    @Value("${github.basicauth.password}")
+    private String gitHubPassword;
+
     private final String GIT_HUB_API_BASE_URL = "https://api.github.com/";
     private final String GIT_HUB_API_REPO_URL = "/repos/{repoOfInterest}/{repoName}";
     private final String GIT_HUB_API_LANGUAGES_URL = GIT_HUB_API_REPO_URL + "/languages";
     private final String GIT_HUB_API_USER_REPOSITORIES_URL = GIT_HUB_API_BASE_URL + "/users/{repoOfInterest}/repos";
 
 
-    private final RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
-    public GitHubAPIRepositoryImpl(RestTemplateBuilder restTemplateBuilder) {
+    @Autowired
+    RestTemplateBuilder restTemplateBuilder;
+
+    @PostConstruct
+    private void setupRestTemplate() {
         restTemplate = restTemplateBuilder
                 .rootUri(GIT_HUB_API_BASE_URL)
+                .basicAuthorization(gitHubUserName, gitHubPassword)
                 .setConnectTimeout(15000)
                 .build();
+    }
+
+    public GitHubAPIRepositoryImpl() {
     }
 
     private List<String> getRemainingRepositoryLinks(ResponseEntity<Repository[]> responseEntity) {

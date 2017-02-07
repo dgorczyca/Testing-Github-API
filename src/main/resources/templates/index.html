@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html lang="en"
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -29,7 +30,7 @@
         <tbody>
             <tr th:each="repo : ${repositories}">
                 <td th:text="${repo.name}">RepoName</td>
-                <td th:each="repoLang : ${repo.languageList}">RepoLangs</td>
+
             </tr>
         </tbody>
     </div>
