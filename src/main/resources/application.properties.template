@@ -1,3 +1,4 @@
 spring.thymeleaf.cache=false
 github.basicauth.username="yourUserName"
 github.basicauth.password="yourPassword"
+github.basicauth.base-url=https://api.github.com/

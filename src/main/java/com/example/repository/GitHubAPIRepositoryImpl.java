@@ -1,10 +1,12 @@
 package com.example.repository;
 
+import com.example.GitHubSettings;
 import com.example.domain.Language;
 import com.example.domain.Link;
 import com.example.domain.Repository;
 import com.example.domain.RepositoryWrapper;
 import com.example.utility.GitHubAPIUtility;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -26,38 +28,25 @@ import java.util.regex.Pattern;
 /**
  * Created by dg on 30/01/2017.
  */
+
 @Component
 public class GitHubAPIRepositoryImpl implements GitHubAPIRepository {
 
-    private final String repoOfInterest = "nasa";
+    private final String REPO_NASA = "nasa";
 
-    @Value("${github.basicauth.username}")
-    private String gitHubUserName;
-
-    @Value("${github.basicauth.password}")
-    private String gitHubPassword;
-
-    final String GIT_HUB_API_BASE_URL = "https://api.github.com/";
     final String GIT_HUB_API_REPO_URL = "/repos/{repoOfInterest}/{repoName}";
-    final String GIT_HUB_API_LANGUAGES_URL = GIT_HUB_API_REPO_URL + "/languages";
-    final String GIT_HUB_API_USER_REPOSITORIES_URL = GIT_HUB_API_BASE_URL + "/users/{repoOfInterest}/repos";
+    final String GIT_HUB_API_LANGUAGES_URL = GIT_HUB_API_REPO_URL+"/languages";
+    final String GIT_HUB_API_USER_REPOSITORIES_URL ="/users/{repoOfInterest}/repos";
 
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    @Autowired
-    RestTemplateBuilder restTemplateBuilder;
-
-    @PostConstruct
-    private void setupRestTemplate() {
+    public GitHubAPIRepositoryImpl(RestTemplateBuilder restTemplateBuilder, GitHubSettings gitHubSettings) {
         restTemplate = restTemplateBuilder
-                .rootUri(GIT_HUB_API_BASE_URL)
-                .basicAuthorization(gitHubUserName, gitHubPassword)
+                .rootUri(gitHubSettings.getBaseUrl())
+                .basicAuthorization(gitHubSettings.getUsername(), gitHubSettings.getPassword())
                 .setConnectTimeout(15000)
                 .build();
-    }
-
-    public GitHubAPIRepositoryImpl() {
     }
 
     private List<String> getRemainingRepositoryLinks(ResponseEntity<Repository[]> responseEntity) {
@@ -80,7 +69,7 @@ public class GitHubAPIRepositoryImpl implements GitHubAPIRepository {
     }
 
     public RepositoryWrapper getRepositories() {
-        ResponseEntity<Repository[]> responseEntity = restTemplate.getForEntity(GIT_HUB_API_USER_REPOSITORIES_URL, Repository[].class, repoOfInterest);
+        ResponseEntity<Repository[]> responseEntity = restTemplate.getForEntity(GIT_HUB_API_USER_REPOSITORIES_URL, Repository[].class, REPO_NASA);
         List<Link> links = findLinks(getRemainingRepositoryLinks(responseEntity));
         List<Repository> repositories = new ArrayList<>(Arrays.asList(responseEntity.getBody()));
         setReposLanguages(repositories);
@@ -107,7 +96,7 @@ public class GitHubAPIRepositoryImpl implements GitHubAPIRepository {
 
     public List<Language> getRepoLanguages(String repoName) {
 
-        ResponseEntity<Map<String, Integer>> responseEntity = restTemplate.exchange(GIT_HUB_API_LANGUAGES_URL, HttpMethod.GET, null, new ParameterizedTypeReference<Map<String,Integer>>() {}, repoOfInterest, repoName);
+        ResponseEntity<Map<String, Integer>> responseEntity = restTemplate.exchange(GIT_HUB_API_LANGUAGES_URL, HttpMethod.GET, null, new ParameterizedTypeReference<Map<String,Integer>>() {}, REPO_NASA, repoName);
         Map<String, Integer> mapLanguages = responseEntity.getBody();
         List<Language> languages = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : mapLanguages.entrySet()) {
