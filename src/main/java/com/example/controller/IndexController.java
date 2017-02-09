@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.domain.Report;
 import com.example.domain.Repository;
 import com.example.service.RepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,11 @@ public class IndexController {
     RepositoryService repositoryService;
 
     @RequestMapping("/index")
-    public String index(Model model, @RequestParam(value="name", required=false, defaultValue="Test") String name) {
-        model.addAttribute("name",name);
+    public String index(Model model) {
+        String[] labels = new String[]{"Java","C++","C#"};
+        String[] values = new String[]{"20","30","40"};
+        Report report = new Report("TestReport",labels, values);
+        model.addAttribute(report);
         return "index";
     }
 

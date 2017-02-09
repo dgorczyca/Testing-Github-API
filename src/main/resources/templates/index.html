@@ -20,17 +20,31 @@
     <!-- Material Design Bootstrap -->
     <link href="../css/mdb.min.css" th:href="@{/css/mdb.min.css}" rel="stylesheet" />
 
+    <script type="application/javascript">
+        $(function () {
+            data =
+            var option = {
+                responsive: true,
+            };
+            // Get the context of the canvas element we want to select
+            var ctx = document.getElementById("myChart").getContext('2d');
+            var myLineChart = new Chart(ctx).Line(data, option); //'Line' defines type of the chart.
+        });
+    </script>
+
 </head>
 
 <body>
-
+<input type="hidden" id="labels" th:value="${report.printedLables}">
+<input type="hidden" id="values" th:value="${report.printedValues}">
 <div id="containter">
+    <canvas id="myChart"></canvas>
+
     <p th:text="'Hello, ' + ${name} + '!'" />
     <div th:unless="${#lists.isEmpty(repositories)}">
         <tbody>
             <tr th:each="repo : ${repositories}">
                 <td th:text="${repo.name}">RepoName</td>
-
             </tr>
         </tbody>
     </div>

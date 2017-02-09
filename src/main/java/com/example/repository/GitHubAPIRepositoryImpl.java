@@ -37,10 +37,10 @@ public class GitHubAPIRepositoryImpl implements GitHubAPIRepository {
     @Value("${github.basicauth.password}")
     private String gitHubPassword;
 
-    private final String GIT_HUB_API_BASE_URL = "https://api.github.com/";
-    private final String GIT_HUB_API_REPO_URL = "/repos/{repoOfInterest}/{repoName}";
-    private final String GIT_HUB_API_LANGUAGES_URL = GIT_HUB_API_REPO_URL + "/languages";
-    private final String GIT_HUB_API_USER_REPOSITORIES_URL = GIT_HUB_API_BASE_URL + "/users/{repoOfInterest}/repos";
+    final String GIT_HUB_API_BASE_URL = "https://api.github.com/";
+    final String GIT_HUB_API_REPO_URL = "/repos/{repoOfInterest}/{repoName}";
+    final String GIT_HUB_API_LANGUAGES_URL = GIT_HUB_API_REPO_URL + "/languages";
+    final String GIT_HUB_API_USER_REPOSITORIES_URL = GIT_HUB_API_BASE_URL + "/users/{repoOfInterest}/repos";
 
 
     private RestTemplate restTemplate;
